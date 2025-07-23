@@ -1,61 +1,61 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { 
-  LayoutDashboard, 
-  TrendingUp, 
-  BookMarked, 
-  Bot, 
-  Code2, 
-  Settings 
+import {
+  LayoutDashboard,
+  TrendingUp,
+  BookMarked,
+  Bot,
+  Code2,
+  Settings,
 } from 'lucide-react';
 
 const features = [
   {
-    icon: <LayoutDashboard className="w-8 h-8" />,
+    icon: <LayoutDashboard className="w-8 h-8 text-purple-500 dark:text-purple-400" />,
     title: 'Dashboard',
     desc: 'Performance metrics, progress charts, daily revision, ongoing tasks, streak calendar, and upcoming tasks',
-    color: 'border-purple-500'
+    color: 'border-purple-500',
   },
   {
-    icon: <TrendingUp className="w-8 h-8" />,
+    icon: <TrendingUp className="w-8 h-8 text-blue-500 dark:text-blue-400" />,
     title: 'My Progress',
     desc: 'Visual roadmap tracking, completed topics, improvement areas, and multi-role roadmaps',
-    color: 'border-blue-500'
+    color: 'border-blue-500',
   },
   {
-    icon: <BookMarked className="w-8 h-8" />,
+    icon: <BookMarked className="w-8 h-8 text-emerald-500 dark:text-emerald-400" />,
     title: 'My Notes',
     desc: 'AI-powered notes with topics, resources, tags, attachments, and diagrams',
-    color: 'border-emerald-500'
+    color: 'border-emerald-500',
   },
   {
-    icon: <Bot className="w-8 h-8" />,
+    icon: <Bot className="w-8 h-8 text-amber-500 dark:text-amber-400" />,
     title: 'AI Mentor',
     desc: 'Chat-based guidance for your skills roadmap, notes, and technical doubts',
-    color: 'border-amber-500'
+    color: 'border-amber-500',
   },
   {
-    icon: <Code2 className="w-8 h-8" />,
+    icon: <Code2 className="w-8 h-8 text-red-500 dark:text-red-400" />,
     title: 'Practice',
     desc: 'Theory questions with AI feedback on your answers and improvement areas',
-    color: 'border-red-500'
+    color: 'border-red-500',
   },
   {
-    icon: <Settings className="w-8 h-8" />,
+    icon: <Settings className="w-8 h-8 text-cyan-500 dark:text-cyan-400" />,
     title: 'Settings',
     desc: 'Edit roadmaps, share progress, view badges, and manage personal info',
-    color: 'border-cyan-500'
-  }
+    color: 'border-cyan-500',
+  },
 ];
 
 export default function Features() {
   const cardsRef = useRef<HTMLDivElement[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initial animation
-    gsap.fromTo(cardsRef.current,
+    // Entry animation
+    gsap.fromTo(
+      cardsRef.current,
       { y: 100, opacity: 0, rotationX: 15 },
       {
         y: 0,
@@ -63,7 +63,7 @@ export default function Features() {
         rotationX: 0,
         duration: 0.8,
         stagger: 0.15,
-        ease: 'power3.out'
+        ease: 'power3.out',
       }
     );
 
@@ -75,15 +75,15 @@ export default function Features() {
         const y = e.clientY - rect.top;
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        const angleX = (y - centerY) / 20;
-        const angleY = (centerX - x) / 20;
+        const angleX = (y - centerY) / 15;
+        const angleY = (centerX - x) / 15;
 
         gsap.to(card, {
           rotationX: angleX,
           rotationY: angleY,
           transformPerspective: 1000,
-          transformOrigin: "center center",
-          duration: 0.5
+          transformOrigin: 'center center',
+          duration: 0.5,
         });
       });
 
@@ -91,70 +91,71 @@ export default function Features() {
         gsap.to(card, {
           rotationX: 0,
           rotationY: 0,
-          duration: 0.5
+          duration: 0.5,
         });
       });
     });
 
     // Border animation
-    const borderTimelines = cardsRef.current.map(card => {
+    const borderTimelines = cardsRef.current.map((card) => {
       const tl = gsap.timeline({ repeat: -1 });
       const border = card.querySelector('.animated-border');
       tl.to(border, {
-        backgroundPosition: '100% 50%',
+        backgroundPosition: '200% 0',
         duration: 3,
-        ease: 'linear'
+        ease: 'linear',
       });
       return tl;
     });
 
     return () => {
-      borderTimelines.forEach(tl => tl.kill());
+      borderTimelines.forEach((tl) => tl.kill());
     };
   }, []);
 
   return (
-    <section id='features' className="relative py-16 bg-black overflow-hidden">
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 to-blue-900"></div>
+    <section id="features" className="relative py-6 bg-white dark:bg-black overflow-hidden transition-colors duration-300">
+      {/* Background Glow */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -top-20 -left-20 w-[600px] h-[600px] rounded-full bg-[#6c4bc8]/20 blur-3xl" />
+        <div className="absolute -bottom-20 -right-20 w-[500px] h-[500px] rounded-full bg-[#6c4bc8]/20 blur-3xl" />
       </div>
-      
+
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-300 mb-4">
-            Your Complete Developer Growth Suite
+        <div className="text-center mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            Your Complete{' '}
+            <span className="bg-clip-text text-transparent bg-[#6c4bc8]">
+              Developer Growth Suite
+            </span>
           </h2>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Everything you need to track, improve, and master your development skills in one place
           </p>
         </div>
 
-        <div 
-          ref={containerRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, idx) => (
             <div
               key={idx}
-              ref={el => { if (el) cardsRef.current[idx] = el; }}
-              className={`relative p-0.5 rounded-xl bg-gradient-to-br from-transparent via-transparent to-transparent overflow-hidden ${feature.color}`}
+              ref={(el) => {
+                if (el) cardsRef.current[idx] = el;
+              }}
+              className={`relative p-0.5 rounded-xl overflow-hidden transition-transform duration-300 hover:scale-[1.03] ${feature.color}`}
             >
-              <div className="animated-border absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent bg-[length:200%_100%]"></div>
-              
-              <div 
-                className="relative bg-gray-900/80 backdrop-blur-sm p-6 rounded-xl h-full transition-all duration-300"
+              <div className="animated-border absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent dark:via-white/20 bg-[length:200%_100%] z-0 rounded-xl" />
+              <div
+                className="relative bg-white dark:bg-gray-900/80 backdrop-blur-md shadow-xl dark:shadow-2xl p-6 rounded-xl h-full z-10"
                 style={{
                   transformStyle: 'preserve-3d',
-                  perspective: '1000px'
+                  perspective: '1000px',
                 }}
               >
-                <div className="mb-4 flex items-center justify-center w-14 h-14 rounded-lg bg-gradient-to-br from-black to-gray-800 shadow-lg">
+                <div className="mb-4 flex items-center justify-center w-14 h-14 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-black dark:to-gray-800 shadow-inner dark:shadow-md">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-300">{feature.desc}</p>
-                
-                <div className="absolute inset-0 border border-white/5 rounded-xl pointer-events-none"></div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{feature.title}</h3>
+                <p className="text-gray-700 dark:text-gray-300">{feature.desc}</p>
               </div>
             </div>
           ))}

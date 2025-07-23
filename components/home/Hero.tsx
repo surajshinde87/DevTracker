@@ -85,7 +85,7 @@ export default function HeroSection() {
 
           <div className="hero-fade flex flex-col sm:flex-row justify-start items-center gap-4">
             <Link
-              href="/signup"
+              href="/auth/register"
               className="px-6 py-3 rounded-xl font-semibold text-white 
                          bg-[#6c4bc8] hover:scale-105 hover:shadow-lg transition-transform duration-300"
             >

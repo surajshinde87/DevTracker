@@ -170,7 +170,7 @@ const Navbar = () => {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 h-18 flex justify-between items-center px-4 md:px-10 transition-colors duration-300 ${
+        className={`sticky top-0 z-50 h-20 flex justify-between items-center px-4 md:px-10 transition-colors duration-300 ${
           isDarkMode ? "bg-[#0c0614]" : "bg-[#f7f5fa]"
         }`}
       >
@@ -188,9 +188,9 @@ const Navbar = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:block">
-          <ul className="flex gap-8 text-md font-medium">
+          <ul className="flex gap-8 text-lg font-medium">
             {navItems.map((item, index) => (
-              <li key={index} ref={(el) => (navLinksRef.current[index] = el)}>
+              <li key={index} ref={el => {navLinksRef.current[index] = el}}>
                 <Link
                   href={item.path}
                   onClick={(e) => handleScroll(e, item.path)}
@@ -212,7 +212,7 @@ const Navbar = () => {
 
         {/* Desktop Buttons */}
         <div className="hidden md:flex gap-3" ref={buttonRef}>
-          <Link href="/login">
+          <Link href="/auth/login">
             <button
               className="bg-[#6c4bc8] text-white px-4 py-2 rounded-lg hover:bg-[#6c4bc8] transition-all shadow-md hover:shadow-[#6c4bc8]0/30"
               type="button"
@@ -221,7 +221,7 @@ const Navbar = () => {
               Login
             </button>
           </Link>
-          <Link href="/signup">
+          <Link href="/auth/register">
             <button
               className="border border-[#6c4bc8] text-[#6c4bc8] px-4 py-2 rounded-lg hover:bg-[#6c4bc8] hover:text-white transition-all shadow-md hover:shadow-fuchsia-300/30"
               type="button"
@@ -272,12 +272,12 @@ const Navbar = () => {
           ))}
 
           <div className="flex flex-col gap-4 pt-6 border-t border-gray-400/40">
-            <Link href="/login">
+            <Link href="/auth/login">
               <button className="w-full bg-[#6c4bc8] text-white px-4 py-2 rounded hover:bg-fuchsia-600 transition">
                 Login
               </button>
             </Link>
-            <Link href="/signup">
+            <Link href="/auth/register">
               <button className="w-full border border-[#6c4bc8] text-[#6c4bc8] px-4 py-2 rounded hover:bg-fuchsia-600 hover:text-white transition">
                 Sign Up
               </button>
