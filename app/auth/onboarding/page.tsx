@@ -35,7 +35,7 @@ const generateFakeRoadmap = (role: string, skills: string[]) => {
 - HTML, CSS, JavaScript
 
 2️⃣ Frameworks:
-- ${skills.includes('React') ? 'React' : 'Vue.js'} (Choose your framework)
+- ${skills.includes('React') ? 'React' : 'Vue.js'}
 - Next.js for SSR & Routing
 
 3️⃣ Styling:
@@ -54,8 +54,7 @@ const generateFakeRoadmap = (role: string, skills: string[]) => {
 - SEO, Accessibility, Performance
 
 8️⃣ Projects:
-- Build 3-5 real-world projects
-`;
+- Build 3-5 real-world projects`;
   }
   if (role.includes('backend')) {
     return `
@@ -82,8 +81,7 @@ const generateFakeRoadmap = (role: string, skills: string[]) => {
 7️⃣ Testing & Scaling:
 - Unit tests, Load balancing
 
-8️⃣ Real-World Projects
-`;
+8️⃣ Real-World Projects`;
   }
   if (role.includes('devops')) {
     return `
@@ -107,13 +105,12 @@ const generateFakeRoadmap = (role: string, skills: string[]) => {
 7️⃣ Monitoring:
 - Prometheus, Grafana
 
-8️⃣ Security Best Practices
-`;
+8️⃣ Security Best Practices`;
   }
   return `AI Generated Roadmap will appear here based on your role and skills.`;
 };
 
-const OnboardingPage = () => {
+export default function OnboardingPage() {
   const totalSteps = stepsData.length;
   const [step, setStep] = useState(1);
   const [customRole, setCustomRole] = useState('');
@@ -128,9 +125,8 @@ const OnboardingPage = () => {
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, totalSteps));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
-  const saveData = (key: keyof typeof formData, value: any) => {
+  const saveData = (key: keyof typeof formData, value: any) =>
     setFormData((prev) => ({ ...prev, [key]: value }));
-  };
 
   const getRoadmapValue = formData.editedRoadmap || formData.aiRoadmap;
   const skillsForRole = roleSkillMap[formData.role.toLowerCase()] || [];
@@ -148,7 +144,7 @@ const OnboardingPage = () => {
         <div
           className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500"
           style={{ width: `${(step / totalSteps) * 100}%` }}
-        ></div>
+        />
       </div>
 
       <AnimatePresence mode="wait">
@@ -176,7 +172,6 @@ const OnboardingPage = () => {
                   {role.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                 </button>
               ))}
-
               <button
                 onClick={() => saveData('role', customRole)}
                 className={`block w-full mb-3 rounded-lg px-4 py-3 font-medium border ${
@@ -204,26 +199,26 @@ const OnboardingPage = () => {
           {step === 2 && (
             <div>
               <h2 className="text-xl font-bold mb-4">🛠️ Select Your Skills</h2>
+              {[...new Set([...skillsForRole, ...formData.skills])].map((skill) => (
+  <label
+    key={skill}
+    className="block mb-2 bg-gray-50 rounded-lg px-4 py-2 border hover:bg-gray-100 transition"
+  >
+    <input
+      type="checkbox"
+      checked={formData.skills.includes(skill)}
+      onChange={(e) => {
+        const updated = e.target.checked
+          ? [...formData.skills, skill]
+          : formData.skills.filter((s) => s !== skill);
+        saveData('skills', updated);
+      }}
+      className="mr-3"
+    />
+    {skill}
+  </label>
+))}
 
-              {skillsForRole.map((skill) => (
-                <label
-                  key={skill}
-                  className="block mb-2 bg-gray-50 rounded-lg px-4 py-2 border hover:bg-gray-100 transition"
-                >
-                  <input
-                    type="checkbox"
-                    checked={formData.skills.includes(skill)}
-                    onChange={(e) => {
-                      const newSkills = e.target.checked
-                        ? [...formData.skills, skill]
-                        : formData.skills.filter((s) => s !== skill);
-                      saveData('skills', newSkills);
-                    }}
-                    className="mr-3"
-                  />
-                  {skill}
-                </label>
-              ))}
 
               <div className="mt-4">
                 <input
@@ -231,7 +226,7 @@ const OnboardingPage = () => {
                   value={customSkill}
                   onChange={(e) => setCustomSkill(e.target.value)}
                   placeholder="Add another skill..."
-                  className="w-full border rounded-lg p-2 focus:ring focus:outline-none"
+                  className="w-full border rounded-lg p-2"
                 />
                 <button
                   onClick={() => {
@@ -252,9 +247,8 @@ const OnboardingPage = () => {
             <div>
               <h2 className="text-xl font-bold mb-4">🤖 AI Generated Roadmap</h2>
               <p className="mb-4 text-gray-600">
-                AI will generate a personalized roadmap based on your role and skills.
+                Click to generate your personalized static roadmap based on your role and skills.
               </p>
-
               <button
                 onClick={() => {
                   const roadmap = generateFakeRoadmap(formData.role.toLowerCase(), formData.skills);
@@ -262,27 +256,26 @@ const OnboardingPage = () => {
                 }}
                 className="mb-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg font-semibold"
               >
-                Generate Roadmap with AI 🤖
+                Generate Roadmap 🤖
               </button>
-
               <textarea
                 className="w-full border rounded-lg p-3 h-56 focus:ring focus:outline-none"
                 value={formData.aiRoadmap}
                 onChange={(e) => saveData('aiRoadmap', e.target.value)}
-                placeholder="(Click button to auto-generate...)"
-              ></textarea>
+                placeholder="Click generate to view roadmap"
+              />
             </div>
           )}
 
           {step === 4 && (
             <div>
-              <h2 className="text-xl font-bold mb-4">🛠️ Edit Your Roadmap</h2>
+              <h2 className="text-xl font-bold mb-4">✏️ Edit Your Roadmap</h2>
               <textarea
                 className="w-full border rounded-lg p-3 h-56 focus:ring focus:outline-none"
                 value={getRoadmapValue}
                 onChange={(e) => saveData('editedRoadmap', e.target.value)}
-                placeholder="Customize or edit the AI roadmap here..."
-              ></textarea>
+                placeholder="Customize the AI roadmap..."
+              />
             </div>
           )}
 
@@ -299,13 +292,11 @@ const OnboardingPage = () => {
               </div>
               <div className="mb-4">
                 <p className="font-semibold text-gray-700">Final Roadmap:</p>
-                <pre className="bg-gray-100 p-3 rounded-lg whitespace-pre-wrap">
-                  {getRoadmapValue}
-                </pre>
+                <pre className="bg-gray-100 p-3 rounded-lg whitespace-pre-wrap">{getRoadmapValue}</pre>
               </div>
               <button
-                onClick={() => alert('🎉 Roadmap Confirmed & Saved!')}
-                className="bg-green-600 w-full py-3 rounded-lg text-white font-semibold shadow hover:bg-green-700 transition"
+                onClick={() => alert('✅ Roadmap saved locally (static preview)!')}
+                className="bg-green-600 w-full py-3 rounded-lg text-white font-semibold hover:bg-green-700 transition"
               >
                 Confirm & Save
               </button>
@@ -315,7 +306,7 @@ const OnboardingPage = () => {
       </AnimatePresence>
 
       <div className="flex justify-between items-center mt-8">
-        {step > 1 && step < totalSteps && (
+        {step > 1 && (
           <button
             onClick={prevStep}
             className="text-blue-600 font-medium hover:underline"
@@ -340,6 +331,4 @@ const OnboardingPage = () => {
       </div>
     </div>
   );
-};
-
-export default OnboardingPage;
+}
