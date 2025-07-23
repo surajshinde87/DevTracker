@@ -6,20 +6,26 @@ import gsap from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { Menu, X } from 'lucide-react';
 
-// Register GSAP plugins
 gsap.registerPlugin(ScrollToPlugin);
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState('#');
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const logoRef = useRef<HTMLHeadingElement>(null);
-  const navLinksRef = useRef<(HTMLLIElement | null)[]>([]);
+  const navLinksRef = useRef<Array<HTMLLIElement | null>>([]);
   const buttonRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
-  // Animation on mount
+  // Safe dark mode detection on mount
   useEffect(() => {
-    // Initial animations
+    if (typeof window !== 'undefined') {
+      setIsDarkMode(document.documentElement.classList.contains('dark'));
+    }
+  }, []);
+
+  // Animate desktop nav
+  useEffect(() => {
     gsap.from(logoRef.current, {
       y: -50,
       opacity: 0,
@@ -43,33 +49,41 @@ const Navbar = () => {
     });
   }, []);
 
-  // Mobile menu animation
+  // Animate mobile menu
   useEffect(() => {
     if (mobileMenuOpen) {
       gsap.to(mobileMenuRef.current, {
         x: 0,
         duration: 0.3,
-        ease: 'power2.out'
+        ease: 'power2.out',
+      });
+
+      gsap.from(mobileMenuRef.current?.children, {
+        opacity: 0,
+        y: 10,
+        duration: 0.4,
+        stagger: 0.05,
+        delay: 0.1,
       });
     } else {
       gsap.to(mobileMenuRef.current, {
         x: '100%',
         duration: 0.3,
-        ease: 'power2.in'
+        ease: 'power2.in',
       });
     }
   }, [mobileMenuOpen]);
 
+  // Scroll to section
   const handleScroll = (e: React.MouseEvent, targetId: string) => {
     e.preventDefault();
     setMobileMenuOpen(false);
-    
+
     if (targetId === '#') {
-      // Scroll to top
       gsap.to(window, {
         duration: 1,
         scrollTo: 0,
-        ease: 'power2.inOut'
+        ease: 'power2.inOut',
       });
       window.history.pushState(null, '', '/');
       setActiveLink('#');
@@ -78,25 +92,22 @@ const Navbar = () => {
 
     const element = document.querySelector(targetId);
     if (element) {
-      // Calculate position with offset for navbar
       const yOffset = -80;
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
       const offsetPosition = elementPosition + yOffset;
 
-      // Animate scroll
       gsap.to(window, {
         duration: 1,
         scrollTo: offsetPosition,
-        ease: 'power2.inOut'
+        ease: 'power2.inOut',
       });
 
-      // Update URL
       window.history.pushState(null, '', targetId);
       setActiveLink(targetId);
     }
   };
 
-  // Add scroll listener to highlight active section
+  // Highlight nav on scroll
   useEffect(() => {
     const handleScrollHighlight = () => {
       const scrollPosition = window.scrollY + 100;
@@ -104,38 +115,34 @@ const Navbar = () => {
         { id: '#hero', element: document.querySelector('#hero') },
         { id: '#features', element: document.querySelector('#features') },
         { id: '#how-it-works', element: document.querySelector('#how-it-works') },
-        { id: '#why-devtracker', element: document.querySelector('#why-devtracker') }
+        { id: '#why-devtracker', element: document.querySelector('#why-devtracker') },
       ];
 
-      // Check if we're at the very top of the page
       if (window.scrollY < 50) {
         setActiveLink('#');
         return;
       }
 
-      // Check each section
       let foundActive = false;
       sections.forEach(({ id, element }) => {
         if (element) {
           const { offsetTop, offsetHeight } = element as HTMLElement;
-          const sectionTop = offsetTop;
-          const sectionBottom = offsetTop + offsetHeight;
-          
-          if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetTop + offsetHeight
+          ) {
             setActiveLink(id);
             foundActive = true;
           }
         }
       });
 
-      // If no section is active (scrolled past all sections)
-      if (!foundActive && scrollPosition > (document.body.scrollHeight - window.innerHeight - 100)) {
+      if (!foundActive && scrollPosition > document.body.scrollHeight - window.innerHeight - 100) {
         setActiveLink('#why-devtracker');
       }
     };
 
     window.addEventListener('scroll', handleScrollHighlight);
-    // Initial check in case page loads with hash
     handleScrollHighlight();
 
     return () => window.removeEventListener('scroll', handleScrollHighlight);
@@ -150,30 +157,41 @@ const Navbar = () => {
 
   return (
     <>
-      <header className="h-24 flex justify-between items-center p-4 px-4 md:px-10 bg-gray-900/95 backdrop-blur-sm text-white font-extrabold shadow-md z-50 sticky top-0">
+      <header
+        className={`sticky top-0 z-50 h-18 flex justify-between items-center px-4 md:px-10 transition-colors duration-300 ${
+          isDarkMode
+            ? 'bg-[#0c0614] '
+            : 'bg-[#f7f5fa] '
+        }`}
+      >
         <Link href="/" passHref>
           <h2
-            className="text-2xl md:text-3xl tracking-wider text-white cursor-pointer"
             ref={logoRef}
-            onClick={(e) => {
-              e.preventDefault();
-              handleScroll(e, '#');
-            }}
+            onClick={(e) => handleScroll(e, '#')}
+            className={`text-2xl md:text-3xl tracking-wider cursor-pointer font-extrabold ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}
           >
-            Dev<span className="text-fuchsia-400">Tracker</span>
+            Dev<span className="text-[#6c4bc8]">Tracker</span>
           </h2>
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Nav */}
         <nav className="hidden md:block">
-          <ul className="flex gap-6 text-sm">
+          <ul className="flex gap-8 text-lg font-medium">
             {navItems.map((item, index) => (
-              <li key={index} ref={el => { navLinksRef.current[index] = el; }}>
-                <Link 
+              <li key={index} ref={(el) => (navLinksRef.current[index] = el)}>
+                <Link
                   href={item.path}
                   onClick={(e) => handleScroll(e, item.path)}
-                  className={`hover:text-fuchsia-400 transition-colors ${activeLink === item.path ? 'text-fuchsia-400' : 'text-white'}`}
                   scroll={false}
+                  className={`relative transition-colors after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 ${
+                    activeLink === item.path
+                      ? 'text-[#6c4bc8] after:scale-x-100'
+                      : isDarkMode
+                      ? 'text-white hover:text-[#6c4bc8] hover:after:scale-x-100'
+                      : 'text-gray-900 hover:text-fuchsia-600 hover:after:scale-x-100'
+                  }`}
                 >
                   {item.label}
                 </Link>
@@ -182,55 +200,73 @@ const Navbar = () => {
           </ul>
         </nav>
 
+        {/* Desktop Buttons */}
         <div className="hidden md:flex gap-3" ref={buttonRef}>
-          <Link href="/auth/login" passHref>
-            <button className="bg-fuchsia-400 text-gray-900 px-4 py-1 rounded hover:bg-fuchsia-500 transition-all hover:shadow-lg hover:shadow-fuchsia-400/20">
+          <Link href="/login">
+            <button
+              className="bg-[#6c4bc8] text-white px-4 py-2 rounded-lg hover:bg-[#6c4bc8] transition-all shadow-md hover:shadow-[#6c4bc8]0/30"
+              type="button"
+              aria-label="Login"
+            >
               Login
             </button>
           </Link>
-          <Link href="/auth/register" passHref>
-            <button className="border border-fuchsia-400 text-fuchsia-300 px-4 py-1 rounded hover:bg-fuchsia-600 hover:text-white transition-all hover:shadow-lg hover:shadow-fuchsia-400/20">
+          <Link href="/signup">
+            <button
+              className="border border-[#6c4bc8] text-[#6c4bc8] px-4 py-2 rounded-lg hover:bg-[#6c4bc8] hover:text-white transition-all shadow-md hover:shadow-fuchsia-300/30"
+              type="button"
+              aria-label="Sign up"
+            >
               Sign Up
             </button>
           </Link>
         </div>
 
-        {/* Mobile menu button */}
-        <button 
-          className="md:hidden text-white p-2"
+        {/* Mobile Menu Toggle */}
+        <button
+          className={`md:hidden p-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle mobile menu"
+          type="button"
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </header>
 
       {/* Mobile Menu */}
-      <div 
+      <div
         ref={mobileMenuRef}
-        className="fixed inset-y-0 right-0 w-64 bg-gray-900/95 backdrop-blur-sm z-40 transform translate-x-full md:hidden"
-        style={{ top: '64px' }}
+        className={`fixed top-24 right-0 w-64 h-[calc(100vh-96px)] z-40 transform translate-x-full md:hidden p-6 transition-transform duration-300 ease-in-out ${
+          isDarkMode ? 'bg-[#160b24]' : 'bg-[#f7f5fa]'
+        }`}
       >
-        <div className="flex flex-col p-6 space-y-6">
+        <div className="flex flex-col space-y-6">
           {navItems.map((item, index) => (
-            <Link 
+            <Link
               key={index}
               href={item.path}
               onClick={(e) => handleScroll(e, item.path)}
-              className={`text-lg ${activeLink === item.path ? 'text-fuchsia-400' : 'text-white'} hover:text-fuchsia-400 transition-colors`}
               scroll={false}
+              className={`text-lg font-medium transition-colors ${
+                activeLink === item.path
+                  ? 'text-[#6c4bc8]'
+                  : isDarkMode
+                  ? 'text-white hover:text-[#6c4bc8]'
+                  : 'text-gray-900 hover:text-fuchsia-600'
+              }`}
             >
               {item.label}
             </Link>
           ))}
-          
-          <div className="flex flex-col gap-4 pt-6 border-t border-gray-700">
-            <Link href="/auth/login" passHref>
-              <button className="w-full bg-fuchsia-400 text-gray-900 px-4 py-2 rounded hover:bg-fuchsia-500 transition">
+
+          <div className="flex flex-col gap-4 pt-6 border-t border-gray-400/40">
+            <Link href="/login">
+              <button className="w-full bg-[#6c4bc8] text-white px-4 py-2 rounded hover:bg-fuchsia-600 transition">
                 Login
               </button>
             </Link>
-            <Link href="/auth/register" passHref>
-              <button className="w-full border border-fuchsia-400 text-fuchsia-300 px-4 py-2 rounded hover:bg-fuchsia-600 hover:text-white transition">
+            <Link href="/signup">
+              <button className="w-full border border-[#6c4bc8] text-[#6c4bc8] px-4 py-2 rounded hover:bg-fuchsia-600 hover:text-white transition">
                 Sign Up
               </button>
             </Link>
