@@ -42,7 +42,7 @@ const StepsGuide = () => {
                 const Icon = step.icon;
 
                 return (
-                  <div key={actualIndex} className="relative w-1/2 bg-[#f4f4f4] dark:bg-[#333537] rounded-xl p-4 shadow-lg">
+                  <div key={actualIndex} className="relative w-1/2 bg-[#f4f4f4] dark:bg-[#333537] rounded-xl p-2 shadow-lg">
                     <div className="absolute -top-4 -left-4 bg-white dark:bg-gray-200 text-[#6c4bc8] font-extrabold rounded-full w-8 h-8 flex items-center justify-center shadow-md">
                       {actualIndex + 1}
                     </div>
