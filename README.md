@@ -10,3 +10,9 @@ A personal skill and learning tracker built with Next.js, Tailwind CSS, and Mong
 # react-simple-typewriter: To implement typewriter effects in React.
 npm install react-simple-typewriter
 
+npm install jsonwebtoken
+npm install bcryptjs  
+npm i mongoose         
+npm install --save-dev @types/jsonwebtoken
+npm install next-auth
+
