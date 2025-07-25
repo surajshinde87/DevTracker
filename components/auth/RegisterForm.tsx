@@ -38,22 +38,22 @@ const RegisterForm = () => {
   const [loading, setLoading] = useState(false); // Button loading state
   const [showPassword, setShowPassword] = useState(false); // Toggle password visibility
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Toggle confirm password visibility
+  const [socialLoading, setSocialLoading] = useState("");
 
   // Setup React Hook Form with Yup validation
   const {
-    register, // Registers input fields
-    handleSubmit, // Handles form submission
-    formState: { errors }, // Contains validation errors
+    register, 
+    handleSubmit, 
+    formState: { errors },
   } = useForm<FormData>({
-    resolver: yupResolver(schema), // Use Yup for validation
+    resolver: yupResolver(schema), 
   });
 
   // Form submission handler
   const onSubmit = async (data: FormData) => {
-    setLoading(true); // Show loading state
+    setLoading(true); 
 
     try {
-      // Make a POST request to your API route for registering users
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -71,17 +71,35 @@ const RegisterForm = () => {
       const result = await response.json();
 
       if (!response.ok) {
-        // Show error message if signup fails
         throw new Error(result.error || "Signup failed");
       }
-
-      // Redirect user to onboarding page after successful registration
-      router.push("/auth/onboarding");
+      router.push("/auth/login");
     } catch (error: any) {
       console.error("[Signup Error]", error.message);
       alert(error.message); // Show alert for user-friendly error
     } finally {
       setLoading(false); // Stop loading state
+    }
+  };
+
+  // Social login handler with loading and error handling
+  const handleSocialLogin = async (provider: "google" | "github") => {
+    setSocialLoading(provider);
+    try {
+      const res = await signIn(provider, { redirect: false });
+
+      if (res?.error) {
+        alert(`Error signing in with ${provider}: ${res.error}`);
+        setSocialLoading("");
+      } else if (res?.url) {
+        // Redirect manually since redirect: false
+        window.location.href = res.url;
+      } else {
+        setSocialLoading("");
+      }
+    } catch (error: any) {
+      alert(`Error signing in with ${provider}`);
+      setSocialLoading("");
     }
   };
 
@@ -185,20 +203,26 @@ const RegisterForm = () => {
         <div className="flex items-center justify-center mt-4 space-x-4">
           <button
             type="button"
-            onClick={() => signIn("google")}
-            className="flex items-center px-4 py-2 border border-purple-400 rounded-lg text-[#6c4bc8]"
+            onClick={() => handleSocialLogin("google")}
+            disabled={socialLoading === "google"}
+            className={`flex items-center px-4 py-2 border border-purple-400 rounded-lg text-[#6c4bc8] ${
+              socialLoading === "google" ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             <FcGoogle className="mr-2 text-xl" />
-            Google
+            {socialLoading === "google" ? "Loading..." : "Google"}
           </button>
 
           <button
             type="button"
-            onClick={() => signIn("github")}
-            className="flex items-center px-4 py-2 border border-purple-400 rounded-lg text-[#6c4bc8]"
+            onClick={() => handleSocialLogin("github")}
+            disabled={socialLoading === "github"}
+            className={`flex items-center px-4 py-2 border border-purple-400 rounded-lg text-[#6c4bc8] ${
+              socialLoading === "github" ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             <FaGithub className="mr-2 text-xl" />
-            GitHub
+            {socialLoading === "github" ? "Loading..." : "GitHub"}
           </button>
         </div>
       </form>
